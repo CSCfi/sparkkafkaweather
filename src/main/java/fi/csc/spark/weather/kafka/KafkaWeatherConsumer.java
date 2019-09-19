@@ -26,7 +26,7 @@ public class KafkaWeatherConsumer {
 	public void consume(JavaStreamingContext streamingContext) throws InterruptedException {
 	
 		Map<String, Object> kafkaParams = new HashMap<String, Object>();
-		kafkaParams.put("bootstrap.servers", "localhost:9092");
+		kafkaParams.put("bootstrap.servers", "127.0.0.1:9092");
 		kafkaParams.put("key.deserializer", LongDeserializer.class);
 		kafkaParams.put("value.deserializer", StringDeserializer.class);
 		kafkaParams.put("group.id", "weather00");

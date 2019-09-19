@@ -57,7 +57,7 @@ public static void appendAvgTemperatureToFile(JavaRDD<Double> rdd) throws IOExce
 	
 	double temp = rdd.collect().get(0);
 	
-	BufferedWriter writer = new BufferedWriter(new FileWriter("/Users/anandan/Work/Netatmo/example.txt", true)); // true for append
+	BufferedWriter writer = new BufferedWriter(new FileWriter("/Users/hulkkone/temp/example.txt", true)); // true for append
 	
 	long now = Instant.now().getEpochSecond();
 	String viz_data = String.format("%d,%f", now, temp);
