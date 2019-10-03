@@ -1,20 +1,9 @@
 package fi.csc.spark.weather.kafka;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.serialization.LongDeserializer;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.spark.streaming.api.java.JavaDStream;
-import org.apache.spark.streaming.api.java.JavaInputDStream;
-import org.apache.spark.streaming.api.java.JavaPairDStream;
-import org.apache.spark.streaming.api.java.JavaStreamingContext;
-import org.apache.spark.streaming.kafka010.ConsumerStrategies;
-import org.apache.spark.streaming.kafka010.KafkaUtils;
-import org.apache.spark.streaming.kafka010.LocationStrategies;
+import org.apache.spark.streaming.api.java.*;
+import org.apache.spark.streaming.kafka.*;
 
 import fi.csc.spark.weather.utils.SparkWeatherUtils;
 import scala.Tuple2;
@@ -25,25 +14,29 @@ public class KafkaWeatherConsumer {
     Long mes = new Long(1);
     public void consume(JavaStreamingContext streamingContext) throws InterruptedException {
 
-        Map<String, Object> kafkaParams = new HashMap<String, Object>();
+        Map<String, String> kafkaParams = new HashMap<String, String>();
         kafkaParams.put("bootstrap.servers", "my-cluster-kafka:9092");
-        kafkaParams.put("key.deserializer", LongDeserializer.class);
-        kafkaParams.put("value.deserializer", StringDeserializer.class);
         kafkaParams.put("group.id", "weather00");
-        kafkaParams.put("auto.offset.reset", "latest");
-        kafkaParams.put("enable.auto.commit", false);
+        kafkaParams.put("auto.offset.reset", "largest");
+        kafkaParams.put("enable.auto.commit", "false");
 
-        Collection<String> topics = Arrays.asList("weatherHelsinki");
+        Set<String> topicsSet = new HashSet<>(Arrays.asList("weatherHelsinki"));
 
-        JavaInputDStream<ConsumerRecord<Long, String>> kafkaStream =
-                KafkaUtils.createDirectStream(
-                        streamingContext,
-                        LocationStrategies.PreferConsistent(),
-                        ConsumerStrategies.<Long, String>Subscribe(topics, kafkaParams)
-                );
+        // Create direct kafka stream with brokers and topics
+        // There is no LongDecoder.class so decoding to string and parsing to Long later
+        JavaPairInputDStream<String, String> kafkaStream = KafkaUtils.createDirectStream(
+                streamingContext,
+                String.class,
+                String.class,
+                kafka.serializer.StringDecoder.class,
+                kafka.serializer.StringDecoder.class,
+                kafkaParams,
+                topicsSet
+        );
 
 
-        JavaPairDStream<Long,String> sparkStream = kafkaStream.mapToPair(record -> new Tuple2<Long,String>(record.key(), record.value()));
+        // Parsing String to Long format
+        JavaPairDStream<Long,String> sparkStream = kafkaStream.mapToPair(record -> new Tuple2<Long,String>(Long.parseLong(record._1), record._2));
 
         JavaPairDStream<Long, Double> tempStream = sparkStream.mapValues(jsonValueStr -> SparkWeatherUtils.getAvgTemperature(jsonValueStr));
 
