@@ -46,7 +46,6 @@ public class KafkaWeatherConsumer {
 
         JavaDStream<Tuple2<Double, Long>> totalTempStream = countAndTempStream.reduce((a,b) -> new Tuple2<Double,Long>(a._1+b._1, a._2+b._2));
 
-
         JavaDStream<Double> avgTempStream = totalTempStream.map(record -> record._1/record._2);
 
         avgTempStream.print();
