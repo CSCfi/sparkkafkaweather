@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: sparkweather
-        image: docker-registry.default.svc:5000/testspark/sparkweather:latest
+        image: docker-registry.default.svc:5000/juha-kafka/sparkkafkaweather:latest
         ports:
           - containerPort: 5050
         env:

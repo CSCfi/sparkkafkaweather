@@ -15,6 +15,7 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka010.ConsumerStrategies;
 import org.apache.spark.streaming.kafka010.KafkaUtils;
 import org.apache.spark.streaming.kafka010.LocationStrategies;
+import org.apache.kafka.common.TopicPartition;
 
 import fi.csc.spark.weather.utils.SparkWeatherUtils;
 import scala.Tuple2;
@@ -30,7 +31,7 @@ public class KafkaWeatherConsumer {
         kafkaParams.put("key.deserializer", LongDeserializer.class);
         kafkaParams.put("value.deserializer", StringDeserializer.class);
         kafkaParams.put("group.id", "weather00");
-        kafkaParams.put("auto.offset.reset", "largest");
+        kafkaParams.put("auto.offset.reset", "latest");
         kafkaParams.put("enable.auto.commit", "false");
 
         Collection<String> topics = Arrays.asList("weatherHelsinki");
@@ -53,6 +54,7 @@ public class KafkaWeatherConsumer {
 
         countAndTempStream.print();
 
+        /*
         JavaDStream<Tuple2<Double, Long>> totalTempStream = countAndTempStream.reduce((a,b) -> new Tuple2<Double,Long>(a._1+b._1, a._2+b._2));
 
 
@@ -61,7 +63,7 @@ public class KafkaWeatherConsumer {
         avgTempStream.print();
 
         avgTempStream.foreachRDD(rdd -> SparkWeatherUtils.appendAvgTemperatureToFile(rdd));
-
+        */
         streamingContext.start();
 
         streamingContext.awaitTermination();
