@@ -54,7 +54,7 @@ public class KafkaWeatherConsumer {
 
         countAndTempStream.print();
 
-        /*
+
         JavaDStream<Tuple2<Double, Long>> totalTempStream = countAndTempStream.reduce((a,b) -> new Tuple2<Double,Long>(a._1+b._1, a._2+b._2));
 
 
@@ -63,7 +63,7 @@ public class KafkaWeatherConsumer {
         avgTempStream.print();
 
         avgTempStream.foreachRDD(rdd -> SparkWeatherUtils.appendAvgTemperatureToFile(rdd));
-        */
+        
         streamingContext.start();
 
         streamingContext.awaitTermination();
