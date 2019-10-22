@@ -16,13 +16,13 @@ public class SparkApp
     {
     	UserGroupInformation.setLoginUser(UserGroupInformation.createRemoteUser("spark"));
 
-    	SparkConf sparkConf = new SparkConf().setMaster("spark://testspark-spark-master:7077").setAppName("Weather Average");
+    	/*SparkConf sparkConf = new SparkConf().setMaster("spark://testspark-spark-master:7077").setAppName("Weather Average");
     	sparkConf.set("spark.driver.host", System.getenv("IP"));
     	sparkConf.set("spark.driver.bindAddress", "0.0.0.0");
     	sparkConf.set("spark.driver.port", "5050");
+		*/
 
-
-    	JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
+    	JavaSparkContext sparkContext = new JavaSparkContext();
 
     	JavaStreamingContext ssc = new JavaStreamingContext(sparkContext, new Duration(2000));
 
